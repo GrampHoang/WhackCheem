@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pygame import *
 
 
-class GameManager:
+class WhackCheems:
     def __init__(self):
         # Define constants
         self.SCREEN_WIDTH = 800
@@ -13,11 +13,11 @@ class GameManager:
         self.FPS = 60
         self.MOLE_WIDTH = 90
         self.MOLE_HEIGHT = 81
-        self.FONT_SIZE = 31
+        self.FONT_SIZE = 45
         self.FONT_TOP_MARGIN = 26
-        self.LEVEL_SCORE_GAP = 4
+        self.LEVEL_SCORE_GAP = 10 #How many score before bump up a level
         self.LEFT_MOUSE_BUTTON = 1
-        self.GAME_TITLE = "Whack A Mole - Game Programming - Assignment 1"
+        self.GAME_TITLE = "Whack A Cheems - Assignment 1 - Game Dev"
         
         # Initialize player's score, number of missed hits and level
         self.score = 0
@@ -30,13 +30,11 @@ class GameManager:
         self.background = pygame.image.load("images/bg.png")
         
         # Font object for displaying text
-        self.font_obj = pygame.font.Font('fonts/GROBOLD.ttf', self.FONT_SIZE)
+        self.font_obj = pygame.font.Font('fonts/Pixeboy.ttf', self.FONT_SIZE)
         
-        # Initialize the bat's sprite sheet
+        # Initialize the bat's sprite sheet. bat doesn't work though
         bat_sheet = pygame.image.load("images/bat.png")
         self.bat = []
-        
-        # self.bat.append(bat_sheet.subsurface(22, 8, 243, 285))
         self.bat.append(pygame.transform.scale((bat_sheet.subsurface(0, 0, 300, 300)), (100,100)))
         self.bat.append(pygame.transform.scale((bat_sheet.subsurface(300, 0, 300, 300)), (100,100)))
         self.bat.append(pygame.transform.scale((bat_sheet.subsurface(600, 0, 300, 300)), (100,100)))
@@ -54,18 +52,15 @@ class GameManager:
         
         # Positions of the holes in background
         self.hole_positions = []
-        self.hole_positions.append((381, 295))
-        self.hole_positions.append((119, 366))
-        self.hole_positions.append((179, 169))
         self.hole_positions.append((404, 479))
         self.hole_positions.append((636, 366))
         self.hole_positions.append((658, 232))
         self.hole_positions.append((464, 119))
+        self.hole_positions.append((381, 295))
+        self.hole_positions.append((119, 366))
+        self.hole_positions.append((179, 169))
         self.hole_positions.append((95, 43))
         self.hole_positions.append((603, 11))
-        
-        # Init debugger
-        self.debugger = Debugger("debug")
         
         # Sound effects
         self.soundEffect = SoundEffect()
@@ -95,7 +90,7 @@ class GameManager:
     # Update the game states, re-calculate the player's score, misses, level
     def update(self):
         # Update the player's score
-        current_score_string = "SCORE:\t" + str(self.score)
+        current_score_string = "Score: " + str(self.score)
         score_text = self.font_obj.render(current_score_string, True, (255, 255, 255))
         score_text_pos = score_text.get_rect()
         score_text_pos.centerx = self.background.get_rect().centerx
@@ -103,7 +98,7 @@ class GameManager:
         self.screen.blit(score_text, score_text_pos)
         
         # Update the player's misses
-        current_misses_string = "MISSES:\t" + str(self.misses)
+        current_misses_string = "Misses: " + str(self.misses)
         misses_text = self.font_obj.render(current_misses_string, True, (255, 255, 255))
         misses_text_pos = misses_text.get_rect()
         misses_text_pos.centerx = self.SCREEN_WIDTH / 5 * 4
@@ -111,10 +106,11 @@ class GameManager:
         self.screen.blit(misses_text, misses_text_pos)
         
         # Update the player's level
-        current_level_string = "LEVEL:\t" + str(self.level)
+        current_level_string = "Level: " + str(self.level)
         level_text = self.font_obj.render(current_level_string, True, (255, 255, 255))
         level_text_pos = level_text.get_rect()
-        level_text_pos.centerx, level_text_pos.centery = (self.SCREEN_WIDTH / 5 * 1, self.FONT_TOP_MARGIN)
+        level_text_pos.centerx = self.SCREEN_WIDTH / 5
+        level_text_pos.centery = self.FONT_TOP_MARGIN
         self.screen.blit(level_text, level_text_pos)
 
     # Start the game's main loop
@@ -197,24 +193,13 @@ class GameManager:
             # Update the display
             pygame.display.flip()
 
-
-# The Debugger class - use this class for printing out debugging information
-class Debugger:
-    def __init__(self, mode):
-        self.mode = mode
-
-    def log(self, message):
-        if self.mode is "debug":
-            print("> DEBUG: " + str(message))
-
-
 class SoundEffect:
     def __init__(self):
-        self.mainTrack = pygame.mixer.music.load("sounds/themesong.wav")
+        self.mainTrack = pygame.mixer.music.load("sounds/theme.mp3")
         self.fireSound = pygame.mixer.Sound("sounds/bonk.mp3")
         self.fireSound.set_volume(1.0)
         self.popSound = pygame.mixer.Sound("sounds/pop.wav")
-        self.hurtSound = pygame.mixer.Sound("sounds/hurt.wav")
+        self.hurtSound = pygame.mixer.Sound("sounds/oof.mp3")
         self.levelSound = pygame.mixer.Sound("sounds/point.wav")
         pygame.mixer.music.play(-1)
 
@@ -242,15 +227,14 @@ class SoundEffect:
     def stopLevelUp(self):
         self.levelSound.stop()
 
-###############################################################
+#------------------------------------------------------------------------#
 def main():
     # Initialize the game
     pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
     pygame.init()
-
     # Run the main loop
-    my_game = GameManager()
-    my_game.start()
+    game = WhackCheems()
+    game.start()
     # Exit the game if the main loop ends
     pygame.quit()
 
