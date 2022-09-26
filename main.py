@@ -30,7 +30,7 @@ class WhackCheems:
         self.background = pygame.image.load("images/bg.png")
         
         # Font object for displaying text
-        self.font_obj = pygame.font.Font('fonts/Pixeboy.ttf', self.FONT_SIZE)
+        self.font_obj = pygame.font.Font('fonts/Pixelboy.ttf', self.FONT_SIZE)
         
         # Initialize the bat's sprite sheet. bat doesn't work though
         bat_sheet = pygame.image.load("images/bat.png")
@@ -115,13 +115,13 @@ class WhackCheems:
 
     # Start the game's main loop
     # Contains some logic for handling animations, mole hit events, etc..
-    def start(self):
+    def start(self, dif):
         cycle_time = 0
         num = -1
         loop = True
         is_down = False
         interval = 0.1
-        initial_interval = 1
+        initial_interval = 1 if dif == 1 else 0.25
         frame_num = 0
         left = 0
         # Time control variables
@@ -228,15 +228,73 @@ class SoundEffect:
         self.levelSound.stop()
 
 #------------------------------------------------------------------------#
-def main():
+def main(dif):
     # Initialize the game
     pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
     pygame.init()
     # Run the main loop
     game = WhackCheems()
-    game.start()
+    game.start(dif)
     # Exit the game if the main loop ends
     pygame.quit()
 
+def option_menu():
+    pass
+
+def main_menu(dif):
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption('Whack-A-Cheems')
+    background = pygame.image.load('images/bg_menu.png')
+    background = pygame.transform.scale(background, (800, 600))
+    screen.blit(background, (0, 0))
+    #Title
+    game_title = pygame.font.Font('fonts/Pixelboy.ttf', 90)
+    game_title_text = game_title.render('Whack A Cheems', True, (255, 255, 255))
+    screen.blit(game_title_text, (145, 100))
+    #start button with text
+    start_button = pygame.Rect(325, 300, 160, 40)
+    pygame.draw.rect(screen, (0, 0, 0), start_button)
+    font = pygame.font.Font('fonts/Pixelboy.ttf', 32)
+    text = font.render('Start', True, (255, 255, 255))
+    screen.blit(text, (375, 310))
+    #quit button with text
+    quit_button = pygame.Rect(325, 500, 160, 40)
+    pygame.draw.rect(screen, (0, 0, 0), quit_button)
+    font = pygame.font.Font('fonts/Pixelboy.ttf', 32)
+    text = font.render('Quit', True, (255, 255, 255))
+    screen.blit(text, (375, 510))
+    #options button with text
+    options_button = pygame.Rect(325, 400, 160, 40)
+    pygame.draw.rect(screen, (0, 0, 0), options_button)
+    font = pygame.font.Font('fonts/Pixelboy.ttf', 32)
+    text = font.render(("easy" if dif == 1 else "hard"), True, (255, 255, 255))
+    screen.blit(text, (375, 410))
+
+    pygame.display.flip()
+
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if start_button.collidepoint(event.pos):
+                    main(dif)
+                if options_button.collidepoint(event.pos):
+                    if dif == 1:
+                        dif = 2
+                    else:
+                        dif = 1
+                    pygame.draw.rect(screen, (0, 0, 0), options_button)
+                    text = font.render(("easy" if dif == 1 else "hard"), True, (255, 255, 255))
+                    screen.blit(text, (375, 410))
+                if quit_button.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
+        pygame.display.update()
+
 if __name__ == "__main__":
-    main()
+    dif = 1
+    main_menu(dif)
