@@ -23,7 +23,7 @@ class WhackCheems:
         self.score = 0
         self.misses = 0
         self.level = 1
-        
+        self.time = 30
         # Initialize screen
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         pygame.display.set_caption(self.GAME_TITLE)
@@ -89,11 +89,19 @@ class WhackCheems:
 
     # Update the game states, re-calculate the player's score, misses, level
     def update(self):
+        # Update the player's level
+        current_level_string = "Level: " + str(self.level)
+        level_text = self.font_obj.render(current_level_string, True, (255, 255, 255))
+        level_text_pos = level_text.get_rect()
+        level_text_pos.centerx = self.SCREEN_WIDTH / 8
+        level_text_pos.centery = self.FONT_TOP_MARGIN
+        self.screen.blit(level_text, level_text_pos)
+        
         # Update the player's score
         current_score_string = "Score: " + str(self.score)
         score_text = self.font_obj.render(current_score_string, True, (255, 255, 255))
         score_text_pos = score_text.get_rect()
-        score_text_pos.centerx = self.background.get_rect().centerx
+        score_text_pos.centerx = self.SCREEN_WIDTH / 6 * 2 + 20
         score_text_pos.centery = self.FONT_TOP_MARGIN
         self.screen.blit(score_text, score_text_pos)
         
@@ -101,18 +109,23 @@ class WhackCheems:
         current_misses_string = "Misses: " + str(self.misses)
         misses_text = self.font_obj.render(current_misses_string, True, (255, 255, 255))
         misses_text_pos = misses_text.get_rect()
-        misses_text_pos.centerx = self.SCREEN_WIDTH / 5 * 4
+        misses_text_pos.centerx = self.SCREEN_WIDTH / 8 * 5
         misses_text_pos.centery = self.FONT_TOP_MARGIN
         self.screen.blit(misses_text, misses_text_pos)
         
-        # Update the player's level
-        current_level_string = "Level: " + str(self.level)
-        level_text = self.font_obj.render(current_level_string, True, (255, 255, 255))
-        level_text_pos = level_text.get_rect()
-        level_text_pos.centerx = self.SCREEN_WIDTH / 5
-        level_text_pos.centery = self.FONT_TOP_MARGIN
-        self.screen.blit(level_text, level_text_pos)
+        # Update the player's misses
+        time_string = "Time: " + str(self.time)
+        time_text = self.font_obj.render(time_string, True, (255, 255, 255))
+        time_text_pos = time_text.get_rect()
+        time_text_pos.centerx = self.SCREEN_WIDTH / 8 * 7
+        time_text_pos.centery = self.FONT_TOP_MARGIN
+        self.screen.blit(time_text, time_text_pos)
 
+    def gameover(self):
+        game_over = pygame.font.Font('fonts/Pixelboy.ttf', 150)
+        game_over_text = game_over.render('GAME OVER', True, (255, 255, 255))
+        self.screen.blit(game_over_text, (145, 100))    
+        
     # Start the game's main loop
     # Contains some logic for handling animations, mole hit events, etc..
     def start(self, dif):
@@ -124,15 +137,24 @@ class WhackCheems:
         initial_interval = 1 if dif == 1 else 0.25
         frame_num = 0
         left = 0
+        count = 0
         # Time control variables
         clock = pygame.time.Clock()
+        start_ticks=pygame.time.get_ticks() #starter tick
 
         for i in range(len(self.mole)):
             self.mole[i].set_colorkey((0, 0, 0))
             self.mole[i] = self.mole[i].convert_alpha()
 
         while loop:
-            mx, my = pygame.mouse.get_pos()
+            if self.time <= 0:
+                self.gameover()
+                num = 9999
+                interval = 9999
+                initial_interval = 999999
+                pygame.display.flip()
+                
+            mx, my = pygame.mouse.get_pos()        
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     loop = False
@@ -167,10 +189,17 @@ class WhackCheems:
                 is_down = False
                 interval = 0.5
                 frame_num = random.randint(0, 8)
-
+                
             mil = clock.tick(self.FPS)
             sec = mil / 1000.0
             cycle_time += sec
+            count = count + mil
+            if count >= 1000:
+                if self.time > 0:
+                    self.time = self.time - 1
+                    count = 0
+                else:
+                    self.time = 0
             if cycle_time > interval:
                 pic = self.mole[num]
                 self.screen.blit(self.background, (0, 0))
