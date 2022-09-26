@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys
 import random
 import math
 from dataclasses import dataclass
@@ -124,7 +124,32 @@ class WhackCheems:
     def gameover(self):
         game_over = pygame.font.Font('fonts/Pixelboy.ttf', 150)
         game_over_text = game_over.render('GAME OVER', True, (255, 255, 255))
-        self.screen.blit(game_over_text, (145, 100))    
+        self.screen.blit(game_over_text, (145, 100)) 
+        #restart button text
+        restart_button = pygame.Rect(300, 400, 200, 50)
+        pygame.draw.rect(self.screen, (255, 255, 255), restart_button)
+        restart_text = self.font_obj.render('Restart', True, (0, 0, 0))
+        self.screen.blit(restart_text, (restart_button.x + 10, restart_button.y + 10))  
+        #return to menu button text
+        menu_button = pygame.Rect(300, 500, 200, 50)
+        pygame.draw.rect(self.screen, (255, 255, 255), menu_button)
+        menu_text = self.font_obj.render('Menu', True, (0, 0, 0))
+        self.screen.blit(menu_text, (menu_button.x + 10, menu_button.y + 10))
+        
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos
+                    if restart_button.collidepoint(mouse_pos):
+                        main(dif)
+                    if menu_button.collidepoint(mouse_pos):
+                        main_menu(dif)
+            pygame.display.update()
+
+        pygame.display.flip()
         
     # Start the game's main loop
     # Contains some logic for handling animations, mole hit events, etc..
@@ -148,77 +173,75 @@ class WhackCheems:
 
         while loop:
             if self.time <= 0:
+                loop = False
                 self.gameover()
-                num = 9999
-                interval = 9999
-                initial_interval = 999999
-                pygame.display.flip()
-                
-            mx, my = pygame.mouse.get_pos()        
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    loop = False
-                if event.type == MOUSEBUTTONDOWN and event.button == self.LEFT_MOUSE_BUTTON:
-                    self.soundEffect.playFire()
-                    if self.is_mole_hit(mouse.get_pos(), self.hole_positions[frame_num]) and num > 0 and left == 0:
-                        num = 3
-                        left = 14
-                        is_down = False
-                        interval = 0
-                        self.score += 1  # Increase player's score
-                        self.level = self.get_player_level()  # Calculate player's level
-                        # Stop popping sound effect
-                        self.soundEffect.stopPop()
-                        # Play hurt sound
-                        self.soundEffect.playHurt()
-                        self.update()
-                    else:
-                        self.misses += 1
-                        self.update()
-                
-            if num > 5:
-                self.screen.blit(self.background, (0, 0))
-                self.update()
-                num = -1
-                left = 0
+            
+            else:
+                mx, my = pygame.mouse.get_pos()        
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        loop = False
+                    if event.type == MOUSEBUTTONDOWN and event.button == self.LEFT_MOUSE_BUTTON:
+                        self.soundEffect.playFire()
+                        if self.is_mole_hit(mouse.get_pos(), self.hole_positions[frame_num]) and num > 0 and left == 0:
+                            num = 3
+                            left = 14
+                            is_down = False
+                            interval = 0
+                            self.score += 1  # Increase player's score
+                            self.level = self.get_player_level()  # Calculate player's level
+                            # Stop popping sound effect
+                            self.soundEffect.stopPop()
+                            # Play hurt sound
+                            self.soundEffect.playHurt()
+                            self.update()
+                        else:
+                            self.misses += 1
+                            self.update()
+                    
+                if num > 5:
+                    self.screen.blit(self.background, (0, 0))
+                    self.update()
+                    num = -1
+                    left = 0
 
-            if num == -1:
-                self.screen.blit(self.background, (0, 0))
-                self.update()
-                num = 0
-                is_down = False
-                interval = 0.5
-                frame_num = random.randint(0, 8)
-                
-            mil = clock.tick(self.FPS)
-            sec = mil / 1000.0
-            cycle_time += sec
-            count = count + mil
-            if count >= 1000:
-                if self.time > 0:
-                    self.time = self.time - 1
-                    count = 0
-                else:
-                    self.time = 0
-            if cycle_time > interval:
-                pic = self.mole[num]
-                self.screen.blit(self.background, (0, 0))
-                self.screen.blit(pic, (self.hole_positions[frame_num][0] - left, self.hole_positions[frame_num][1]))
-                self.update()
-                if is_down is False:
-                    num += 1
-                else:
-                    num -= 1
-                if num == 4:
-                    interval = 0.3
-                elif num == 3:
-                    num -= 1
-                    is_down = True
-                    self.soundEffect.playPop()
-                    interval = self.get_interval_by_level(initial_interval)  # get the newly decreased interval value
-                else:
-                    interval = 0.1
-                cycle_time = 0
+                if num == -1:
+                    self.screen.blit(self.background, (0, 0))
+                    self.update()
+                    num = 0
+                    is_down = False
+                    interval = 0.5
+                    frame_num = random.randint(0, 8)
+                    
+                mil = clock.tick(self.FPS)
+                sec = mil / 1000.0
+                cycle_time += sec
+                count = count + mil
+                if count >= 1000:
+                    if self.time > 0:
+                        self.time = self.time - 1
+                        count = 0
+                    else:
+                        self.time = 0
+                if cycle_time > interval:
+                    pic = self.mole[num]
+                    self.screen.blit(self.background, (0, 0))
+                    self.screen.blit(pic, (self.hole_positions[frame_num][0] - left, self.hole_positions[frame_num][1]))
+                    self.update()
+                    if is_down is False:
+                        num += 1
+                    else:
+                        num -= 1
+                    if num == 4:
+                        interval = 0.3
+                    elif num == 3:
+                        num -= 1
+                        is_down = True
+                        self.soundEffect.playPop()
+                        interval = self.get_interval_by_level(initial_interval)  # get the newly decreased interval value
+                    else:
+                        interval = 0.1
+                    cycle_time = 0
             # Update the display
             pygame.display.flip()
 
@@ -266,9 +289,6 @@ def main(dif):
     game.start(dif)
     # Exit the game if the main loop ends
     pygame.quit()
-
-def option_menu():
-    pass
 
 def main_menu(dif):
     pygame.init()
