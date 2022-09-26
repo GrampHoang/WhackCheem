@@ -23,7 +23,7 @@ class WhackCheems:
         self.score = 0
         self.misses = 0
         self.level = 1
-        self.time = 30
+        self.time = 2
         # Initialize screen
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         pygame.display.set_caption(self.GAME_TITLE)
@@ -122,6 +122,7 @@ class WhackCheems:
         self.screen.blit(time_text, time_text_pos)
 
     def gameover(self):
+        global dif
         game_over = pygame.font.Font('fonts/Pixelboy.ttf', 150)
         game_over_text = game_over.render('GAME OVER', True, (255, 255, 255))
         self.screen.blit(game_over_text, (145, 100)) 
@@ -144,16 +145,17 @@ class WhackCheems:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = event.pos
                     if restart_button.collidepoint(mouse_pos):
-                        main(dif)
+                        main()
                     if menu_button.collidepoint(mouse_pos):
-                        main_menu(dif)
+                        main_menu()
             pygame.display.update()
 
         pygame.display.flip()
         
     # Start the game's main loop
     # Contains some logic for handling animations, mole hit events, etc..
-    def start(self, dif):
+    def start(self):
+        global dif
         cycle_time = 0
         num = -1
         loop = True
@@ -280,17 +282,18 @@ class SoundEffect:
         self.levelSound.stop()
 
 #------------------------------------------------------------------------#
-def main(dif):
+def main():
     # Initialize the game
     pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
     pygame.init()
     # Run the main loop
     game = WhackCheems()
-    game.start(dif)
+    game.start()
     # Exit the game if the main loop ends
     pygame.quit()
 
-def main_menu(dif):
+def main_menu():
+    global dif
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption('Whack-A-Cheems')
@@ -330,7 +333,7 @@ def main_menu(dif):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
-                    main(dif)
+                    main()
                 if options_button.collidepoint(event.pos):
                     if dif == 1:
                         dif = 2
@@ -345,5 +348,6 @@ def main_menu(dif):
         pygame.display.update()
 
 if __name__ == "__main__":
+    global dif
     dif = 1
-    main_menu(dif)
+    main_menu()
