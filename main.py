@@ -23,7 +23,7 @@ class WhackCheems:
         self.score = 0
         self.misses = 0
         self.level = 1
-        self.time = 2
+        self.time = 30
         # Initialize screen
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         pygame.display.set_caption(self.GAME_TITLE)
@@ -123,18 +123,20 @@ class WhackCheems:
 
     def gameover(self):
         global dif
+        game_over_back = pygame.Rect(25, 90, 700, 120)
+        pygame.draw.rect(self.screen, (47, 143, 194), game_over_back)
         game_over = pygame.font.Font('fonts/Pixelboy.ttf', 150)
         game_over_text = game_over.render('GAME OVER', True, (255, 255, 255))
-        self.screen.blit(game_over_text, (145, 100)) 
+        self.screen.blit(game_over_text, (125, 100)) 
         #restart button text
         restart_button = pygame.Rect(300, 400, 200, 50)
-        pygame.draw.rect(self.screen, (255, 255, 255), restart_button)
-        restart_text = self.font_obj.render('Restart', True, (0, 0, 0))
+        pygame.draw.rect(self.screen, (47, 143, 194), restart_button)
+        restart_text = self.font_obj.render('Restart', True, (255, 255, 255))
         self.screen.blit(restart_text, (restart_button.x + 10, restart_button.y + 10))  
         #return to menu button text
         menu_button = pygame.Rect(300, 500, 200, 50)
-        pygame.draw.rect(self.screen, (255, 255, 255), menu_button)
-        menu_text = self.font_obj.render('Menu', True, (0, 0, 0))
+        pygame.draw.rect(self.screen, (47, 143, 194), menu_button)
+        menu_text = self.font_obj.render('Menu', True, (255, 255, 255))
         self.screen.blit(menu_text, (menu_button.x + 10, menu_button.y + 10))
         
         while True:
@@ -306,20 +308,20 @@ def main_menu():
     screen.blit(game_title_text, (145, 100))
     #start button with text
     start_button = pygame.Rect(325, 300, 160, 40)
-    pygame.draw.rect(screen, (0, 0, 0), start_button)
-    font = pygame.font.Font('fonts/Pixelboy.ttf', 32)
+    pygame.draw.rect(screen, (47, 143, 194), start_button)
+    font = pygame.font.Font('fonts/Pixelboy.ttf', 45)
     text = font.render('Start', True, (255, 255, 255))
     screen.blit(text, (375, 310))
     #quit button with text
     quit_button = pygame.Rect(325, 500, 160, 40)
-    pygame.draw.rect(screen, (0, 0, 0), quit_button)
-    font = pygame.font.Font('fonts/Pixelboy.ttf', 32)
+    pygame.draw.rect(screen, (47, 143, 194), quit_button)
+    font = pygame.font.Font('fonts/Pixelboy.ttf', 45)
     text = font.render('Quit', True, (255, 255, 255))
     screen.blit(text, (375, 510))
     #options button with text
     options_button = pygame.Rect(325, 400, 160, 40)
-    pygame.draw.rect(screen, (0, 0, 0), options_button)
-    font = pygame.font.Font('fonts/Pixelboy.ttf', 32)
+    pygame.draw.rect(screen, (47, 143, 194), options_button)
+    font = pygame.font.Font('fonts/Pixelboy.ttf', 45)
     text = font.render(("easy" if dif == 1 else "hard"), True, (255, 255, 255))
     screen.blit(text, (375, 410))
 
@@ -339,7 +341,7 @@ def main_menu():
                         dif = 2
                     else:
                         dif = 1
-                    pygame.draw.rect(screen, (0, 0, 0), options_button)
+                    pygame.draw.rect(screen, (47, 143, 194), options_button)
                     text = font.render(("easy" if dif == 1 else "hard"), True, (255, 255, 255))
                     screen.blit(text, (375, 410))
                 if quit_button.collidepoint(event.pos):
