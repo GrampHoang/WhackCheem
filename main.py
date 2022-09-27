@@ -258,6 +258,7 @@ class SoundEffect:
         self.hurtSound = pygame.mixer.Sound("sounds/oof.mp3")
         self.levelSound = pygame.mixer.Sound("sounds/point.wav")
         pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.7)
 
     def playFire(self):
         self.fireSound.play()
